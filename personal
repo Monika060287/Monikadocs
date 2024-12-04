@@ -1,1 +1,103 @@
 
+Set(
+    ShowLoader,
+    true
+);
+Refresh(IWH_STGP_Request_Details);
+Refresh(IWH_STGP_Request_Details);
+ClearCollect(
+    col_STGP_Part_Details,ShowColumns(
+    IWH_STGP_Request_Details,GP_ShipValue,GP_NetPrice,GP_PartPrice,Part_Number,GPQuantity,IWH_STGP_RequestNo,STGP_Part_Owner,Part_Description,IWH_Stand_Alone_MM_Details,Bonded_or_Not,STGPPart_SerialNo,GP_Currency,STGP_ExchangeRate,STGP_PartType,STGP_Return_Quantity,STGPPart_Weight,STGP_Part_Volume,CIF_Value,'GP_BondedNo.',GP_BondedDate,STGP_Comment,GP_PartWeightType,Foreign_Currency_Value,STGP_TypeofImport,STGP_HAWBNo,STGP_UOM,'Created On',GP_STPI_Import_Appr_No,GP_STPI_Import_Appr_Dt,GP_BOE_No,GP_BOEDate,GP_DutyForgone,STGP_PartRevision)
+);
+
+Set(
+    VarRequestorUpdate,
+    false
+);
+Reset(tglInwardEntryShowRequests);
+Reset(txtSTGPSearch);
+Refresh(IWH_STGP_Requests);
+//Refresh(IWH_STGP_Request_Details);
+Refresh(IWH_STGP_Shipment_Details);
+/*ClearCollect(
+    col_STGP_Part_Details,
+    IWH_STGP_Request_Details
+);*/
+UpdateContext({lclRequests: "My"});
+Set(
+    varInwardEntryCurrentPage,
+    1
+);
+//Refresh(IWH_STGP_Request_Details);
+//ClearCollect(col_STGP_Part_Details,
+//IWH_STGP_Request_Details);
+Set(
+    varSTGPCount,
+    If(
+        varLoggedInUserGroup = "Logistic",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                 IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Logistics team'
+                ||IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'
+            )
+        ),
+        varLoggedInUserGroup = "GISITSD",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With GIS IT SD Team'
+            )
+        ),
+        varLoggedInUserGroup = "Finance",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance Team' || IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team'
+            )
+        ),
+        varLoggedInUserGroup = "Buyer",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With IMS Team' || IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team'
+            )
+        ),
+          // Commented for  Receiving team -Monika
+        /*varLoggedInUserGroup = "BTPSecurity",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With BTP Security Team'
+            )
+        ),*/
+        varLoggedInUserGroup = "Requestor",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Requestor' ||IWH_STGP_RequestNo.'Created By'.'Full Name' = User().FullName
+            )
+        ),
+        varLoggedInUserGroup = "Facility",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Facility Manager'
+            )
+        ),
+          //Added inprogress with Receiving team -Monika
+         varLoggedInUserGroup = "ReceivingTeam",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'InProgress-With Receiving Team'
+            )
+        ),
+        //CountRows(col_STGP_Part_Details)
+        CountIf(col_STGP_Part_Details,true)
+    )
+);
+Set(
+    ShowLoader,
+    false
+);
