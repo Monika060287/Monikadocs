@@ -741,3 +741,712 @@ Set(
     varSpinner,
     false
 )
+/////////////////////landing screen items
+
+
+With(
+    {
+        records: If(
+            IconIENextPage.DisplayMode = DisplayMode.Disabled,
+            If(
+                lclRequests = "My",
+                If(
+                    varLoggedInUserGroup = "Logistic",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                        IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Logistics team' 
+                                        ||IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending' ||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                         col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'InProgress-With Logistics team'
+                                        ||IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    varLoggedInUserGroup = "GISITSD",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                        IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With GIS IT SD Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With GIS IT SD Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+
+                     varLoggedInUserGroup = "ReceivingTeam",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'InProgress-With Receiving Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                        IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'InProgress-With Receiving Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    varLoggedInUserGroup = "Requestor",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Requestor'||IWH_STGP_RequestNo.'Created By'.'Full Name' = User().FullName
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Requestor'||IWH_STGP_RequestNo.'Created By'.'Full Name' = User().FullName,
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    varLoggedInUserGroup = "Facility",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Facility Manager'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Facility Manager',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                     /*varLoggedInUserGroup = "BTPSecurity",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With BTP Security Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With BTP Security Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),*/
+                    varLoggedInUserGroup = "Finance",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance Team' || IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                        IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance Team' || IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    varLoggedInUserGroup = "Buyer",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With IMS Team' || IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                        IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With IMS Team' || IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    IsBlank(txtSTGPSearch.Text),
+                    SortByColumns(
+                        LastN(
+                            FirstN(
+                                col_STGP_Part_Details,
+                                drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                            ),
+                            drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                        ),
+                        "createdon",
+                        SortOrder.Descending,"iwh_name",SortOrder.Descending
+                    ),
+                    SortByColumns(
+                        LastN(
+                            FirstN(
+                                Filter(
+                                    col_STGP_Part_Details,
+                                     txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                            ),
+                            drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                        ),
+                        "createdon",
+                        SortOrder.Descending,"iwh_name",SortOrder.Descending
+                    )
+                ),
+//Code chnged on 1/8/24
+                If(
+                    IsBlank(txtSTGPSearch.Text),
+                    SortByColumns(
+                        LastN(
+                            FirstN(
+                                col_STGP_Part_Details,
+                                drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                            ),
+                            drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                        ),
+                        "createdon",
+                        SortOrder.Descending,"iwh_name",SortOrder.Descending
+                    ),
+                    SortByColumns(
+                        LastN(
+                            FirstN(
+                                Filter(
+                                    col_STGP_Part_Details,
+                                   txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                            ),
+                            drpSTGPEntryMaxRecord.Selected.Value - (drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage - varSTGPCount)
+                        ),
+                        "createdon",
+                        SortOrder.Descending,"iwh_name",SortOrder.Descending
+                    )
+                )
+            ),
+            //else condition for next icon display mode
+            If(
+                lclRequests = "My",
+                If(
+                    varLoggedInUserGroup = "Logistic",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                        IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Logistics team'
+                                        ||IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                         col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Logistics team'
+                                        ||IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                     varLoggedInUserGroup = "GISITSD",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                        IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With GIS IT SD Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With GIS IT SD Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    
+                     varLoggedInUserGroup = "ReceivingTeam",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                        IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'InProgress-With Receiving Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                       IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'InProgress-With Receiving Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    varLoggedInUserGroup = "Requestor",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Requestor'||IWH_STGP_RequestNo.'Created By'.'Full Name' = User().FullName
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Requestor'||IWH_STGP_RequestNo.'Created By'.'Full Name' = User().FullName,
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    varLoggedInUserGroup = "Facility",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Facility Manager'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Facility Manager',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number|| txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    /*varLoggedInUserGroup = "BTPSecurity",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With BTP Security Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With BTP Security Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),*/
+                    varLoggedInUserGroup = "Finance",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance Team'||IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance Team'||IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    IsBlank(txtSTGPSearch.Text),
+                    SortByColumns(
+                        LastN(
+                            FirstN(
+                                col_STGP_Part_Details,
+                                drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                            ),
+                            drpSTGPEntryMaxRecord.Selected.Value
+                        ),
+                        "createdon",
+                        SortOrder.Descending,"iwh_name",SortOrder.Descending
+                    ),
+                    varLoggedInUserGroup = "Buyer",
+                    If(
+                        IsBlank(txtSTGPSearch.Text),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                         IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With IMS Team' || IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team'
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        ),
+                        SortByColumns(
+                            LastN(
+                                FirstN(
+                                    Filter(
+                                        col_STGP_Part_Details,
+                                        IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With IMS Team' ||  IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team',
+                                        txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                    ),
+                                    drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value
+                            ),
+                            "createdon",
+                            SortOrder.Descending,"iwh_name",SortOrder.Descending
+                        )
+                    ),
+                    IsBlank(txtSTGPSearch.Text),
+                    SortByColumns(
+                        LastN(
+                            FirstN(
+                                col_STGP_Part_Details,
+                                drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                            ),
+                            drpSTGPEntryMaxRecord.Selected.Value
+                        ),
+                        "createdon",
+                        SortOrder.Descending,"iwh_name",SortOrder.Descending
+                    ),
+                    SortByColumns(
+                        LastN(
+                            FirstN(
+                                Filter(
+                                    col_STGP_Part_Details,
+                                    txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                            ),
+                            drpSTGPEntryMaxRecord.Selected.Value
+                        ),
+                        "createdon",
+                        SortOrder.Descending,"iwh_name",SortOrder.Descending
+                    )
+                ),
+//Code chnged on 1/8/24
+                If(
+                    IsBlank(txtSTGPSearch.Text),
+                    SortByColumns(
+                        LastN(
+                            FirstN(
+                                col_STGP_Part_Details,
+                                drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                            ),
+                            drpSTGPEntryMaxRecord.Selected.Value
+                        ),
+                        "createdon",
+                        SortOrder.Descending,"iwh_name",SortOrder.Descending
+                    ),
+                    SortByColumns(
+                        LastN(
+                            FirstN(
+                                Filter(
+                                    col_STGP_Part_Details,
+                                    txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Request_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.GatePass_Type || txtSTGPSearch.Text in Part_Number || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_Status || txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_BusinesJustification ||txtSTGPSearch.Text in IWH_STGP_RequestNo.STGP_AccessoriesReqd ||
+                                        txtSTGPSearch.Text in STGP_Part_Owner || txtSTGPSearch.Text in GPQuantity 
+                                ),
+                                drpSTGPEntryMaxRecord.Selected.Value * varInwardEntryCurrentPage
+                            ),
+                            drpSTGPEntryMaxRecord.Selected.Value
+                        ),
+                        "createdon",
+                        SortOrder.Descending,"iwh_name",SortOrder.Descending
+                    )
+                )
+            )
+        )
+    },
+    ForAll(
+        Sequence(CountRows(records)),
+        Patch(
+            Last(
+                FirstN(
+                    records,
+                    Value
+                )
+            ),
+            {rowNumber: Value}
+        )
+    )
+)
