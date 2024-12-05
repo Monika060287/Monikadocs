@@ -101,3 +101,129 @@ Set(
     ShowLoader,
     false
 );
+///////////////button gatepas 
+
+Set(
+    ShowLoader,
+    true
+);
+Set(ApprovevisibilityCG,true);
+//Set(varGenGatePass, true);
+/*Set(FlowResult,If(IWH_STGP_Gatepass_Template.Run(varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number).success="true",Notify("GatePass Created Successfully"),Notify("There is Error while creating the Gatepass")));*/
+
+
+Set(
+    FlowResult,
+    If(
+        IWH_STGP_GatePass_TemplateV2.Run(varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number).success = "true",true,false
+       
+    )
+);
+Refresh(IWH_Process_Documents);
+ClearCollect(
+    colShowAttachment,
+    Filter(
+        IWH_Process_Documents,
+        ProcessID = varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number && Type_Of_Document = IWH_Type_Of_Document.'Standalone Request Invoices'
+    )
+);
+IfError(
+Patch(
+                IWH_AuditLogs,
+                Defaults(IWH_AuditLogs),
+                {
+                    Remarks: "GatePass Genarated",
+                    Process_ID: varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number,
+                    Process_Type: IWH_Process_Type.'Stand Alone Gate Pass',
+                    Update:varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number
+                }
+            );
+
+             ,
+    Notify(
+        "ErrorMessage: " & FirstError.Message & " ErrorKind: " & FirstError.Kind,
+        NotificationType.Error
+    );
+    Patch(
+        'Error Logs',
+        Defaults('Error Logs'),
+        {
+            Action: "Hand it to requestor/DirectCheckin",
+            App: "IWH Standalone gatepass",
+            Control: FirstError.Source,
+            Component: "Screen:Escalation Edit Screen",
+            Message: FirstError.Message,
+            Name: "Error in returnable items at " & Now(),
+            Property: FirstError.Source,
+            RawErrorInfo: FirstError.Message,
+            Timestamp: Now(),
+            User: User().Email,
+            Origin: Origin.SQL,
+            Kind: Switch(
+                FirstError.Kind,
+                0,
+                Kind.None,
+                1,
+                Kind.Sync,
+                2,
+                Kind.MissingRequired,
+                3,
+                Kind.CreatePermission,
+                4,
+                Kind.EditPermissions,
+                5,
+                Kind.DeletePermissions,
+                6,
+                Kind.Conflict,
+                7,
+                Kind.NotFound,
+                8,
+                Kind.ConstraintViolated,
+                9,
+                Kind.GeneratedValue,
+                10,
+                Kind.ReadOnlyValue,
+                11,
+                Kind.Validation,
+                12,
+                Kind.Unknown,
+                13,
+                Kind.Div0,
+                14,
+                Kind.BadLanguageCode,
+                15,
+                Kind.BadRegex,
+                16,
+                Kind.InvalidFunctionUsage,
+                17,
+                Kind.FileNotFound,
+                18,
+                Kind.AnalysisError,
+                19,
+                Kind.ReadPermission,
+                20,
+                Kind.NotSupported,
+                21,
+                Kind.InsufficientMemory,
+                22,
+                Kind.QuotaExceeded,
+                23,
+                Kind.Network,
+                24,
+                Kind.Numeric,
+                Kind.Unknown
+            )
+        }
+    )
+);
+
+Set(
+    ShowLoader,
+    false
+);
+//Set(varGenGatePass, true);
+If(
+    FlowResult = true,
+    Notify("Gatepass generated Successfully",NotificationType.Success),
+    Notify(" There is failure in generating GatePass",NotificationType.Error)
+);
