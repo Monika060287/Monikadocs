@@ -227,3 +227,517 @@ If(
     Notify("Gatepass generated Successfully",NotificationType.Success),
     Notify(" There is failure in generating GatePass",NotificationType.Error)
 );
+//////////////////////////////Preview screen
+
+Set(
+    varSpinner,
+    true
+);
+IfError(
+    If(
+        VarRequestorUpdate,
+        If(
+            varSTGPRequest.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending',
+            Set(
+                varSTGPRequests,
+                Patch(
+                    IWH_STGP_Requests,
+                    LookUp(
+                        IWH_STGP_Requests,
+                        STGP_Request_Number = varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number
+                    ),
+                    {IsGPPartReturned: CombPrevGPPartReturned.Selected.Value}
+                )
+            ),
+//Till here return pending true condition
+            Set(
+                varSTGPRequests,
+                Patch(
+                    IWH_STGP_Requests,
+                    LookUp(
+                        IWH_STGP_Requests,
+                        STGP_Request_Number = varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number
+                    ),
+                    {
+                        GatePass_Type: radpreviewGPType.Selected.Value,
+                        STGP_BusinesJustification: txtPrevGPBusJust.Text,
+                        STGP_UsertoView: txtPrevGPSenderAddUser.Text,
+                        STGP_ReturnedDate: datePrevGPReturnedDate.SelectedDate,
+                        STGP_GatePass_Title: txtPreviewGPTitle.Text,
+                        //STGP_GatePass_Title: "ABC",
+                        STGP_AccessoriesReqd: drpPrevGPAcessReqd.Selected.Value,
+                        STGP_ReqBonded: drpPrevGPBondedorNot.Selected.Value,
+                        STGP_Requestor: txtPrevGPReq.Text,
+                        IsGPPartReturned: CombPrevGPPartReturned.Selected.Value,
+                        //STGP_AssignedTo:First(colGatePassRequest).Requestor,
+                        //'IT Asset':drpPrevGPITAsset.Selected.Value,
+'IT Asset': CombPrevGPITAsset.Selected.Value,
+                        /*STGP_Status:If( 
+     			(First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.Yes),
+                        IWH_STGP_Status.'InProgress-With GIS IT SD Team',
+                        (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.Bonded && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No ),
+                        IWH_STGP_Status.'InProgress-With Logistics team',(First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.'Non-Bonded' && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No ),
+                        IWH_STGP_Status.'InProgress-With Facility Manager'
+               ),*/
+                        STGP_Status: If(
+                            (CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.Yes),
+                            IWH_STGP_Status.'InProgress-With GIS IT SD Team',
+                            (drpPrevGPBondedorNot.Selected.Value = 'IWH_ReqBonded-Type'.Bonded && CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.No),
+                            IWH_STGP_Status.'InProgress-With Logistics team',
+                            (drpPrevGPBondedorNot.Selected.Value = 'IWH_ReqBonded-Type'.'Non-Bonded' && CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.No),
+                            IWH_STGP_Status.'InProgress-With Facility Manager'
+                        ),
+                        GP_AssignedTo: If(
+                            (CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.Yes),
+                            IWH_AssignedGrp_Type.GISITSD,
+                            (drpPrevGPBondedorNot.Selected.Value = 'IWH_ReqBonded-Type'.Bonded && CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.No),
+                            IWH_AssignedGrp_Type.Logistic,
+                            (drpPrevGPBondedorNot.Selected.Value = 'IWH_ReqBonded-Type'.'Non-Bonded' && CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.No),
+                            IWH_AssignedGrp_Type.Facility
+                        )
+               /*GP_AssignedTo:If( 
+     			(First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.Yes),
+                      IWH_AssignedGrp_Type.GISITSD,
+                        (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.Bonded && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No  ),
+                        IWH_AssignedGrp_Type.Logistic,
+                        (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.'Non-Bonded' && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                      IWH_AssignedGrp_Type.Facility
+               )*/
+                    }
+                )
+            );
+            //1st Patch 
+ForAll(
+                col_STGP_Part_Details As STGPPartDetail,
+                Patch(
+                    IWH_STGP_Request_Details,
+                    LookUp(
+                        IWH_STGP_Request_Details,
+                        //STGP_Request_Details = STGPPartDetail.STGP_Request_Details
+                        IWH_Stand_Alone_MM_Details=STGPPartDetail.IWH_Stand_Alone_MM_Details
+                        //IWH_STGP_RequestNo.STGP_Request_Number = varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number && 
+                    ),
+                    {
+                        Part_Number: STGPPartDetail.Part_Number,
+                        Part_Description: STGPPartDetail.Part_Description,
+                        IWH_STGP_RequestNo: varSTGPRequests,
+                        //Part_Type: STGPPartDetail.iwh_part_type1,
+                        STGP_PartType:STGPPartDetail.STGP_PartType,
+                        GP_Currency: STGPPartDetail.GP_Currency,
+                        CIF_Number: STGPPartDetail.CIF_Number,
+                        CIF_Value: STGPPartDetail.CIF_Value,
+                        Bonded_or_Not: STGPPartDetail.Bonded_or_Not,
+                        STGP_Part_Owner: STGPPartDetail.STGP_Part_Owner,
+                        GP_PartPrice: STGPPartDetail.GP_PartPrice,
+                        GP_NetPrice: STGPPartDetail.GP_NetPrice,
+                        GP_ShipValue: STGPPartDetail.GP_ShipValue,
+                        STGP_PartRevision:STGPPartDetail.STGP_PartRevision,
+                        STGP_ExchangeRate: STGPPartDetail.STGP_ExchangeRate,
+                        STGP_ShipValue_Words: NetAmountInWords,
+                        STGPPart_SerialNo: STGPPartDetail.STGPPart_SerialNo,
+                         STGP_InvoiceNumber:STGPPartDetail.STGP_InvoiceNumber,
+                        GPQuantity: STGPPartDetail.GPQuantity
+                    }
+                )
+            );
+            //2nd Patch
+ForAll(
+                colGatePassRequest As shipmentdetails,
+                Patch(
+                    IWH_STGP_Shipment_Details,
+                    LookUp(
+                        IWH_STGP_Shipment_Details,
+                        STGP_RequestNo.STGP_Request_Number = varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number
+                    ),
+                    {
+                        STGP_SenderName: txtPreviewGPSenderName.Text,
+                        STGP_SenderEmail: txtPrevGPSenderEmail.Text,
+                        STGP_RequestNo: varSTGPRequests,
+                        STGP_SenderPhone: txtPrevGPSenderPhoneNo.Text,
+                        STGP_ReceiverName: txtPreviewGPRecName.Text,
+                        STGP_ReceiverEmail: txtPreviewGPRecEmail.Text,
+                        STGP_ReceiverAddress: txtPreviewGPToAddress.Text,
+                        STGP_CostCenter: txtPrevGPCC.Text,
+                        //GP_Fromsite: txtPrevGPFromSite.Text,  changed text box to combobox
+                        GP_Fromsite: CombPrevGPFromSite.Selected.Value,
+                        //GP_ToSite: txtPreviewGPToSite.Text, changed text box to combobox
+                        GP_ToSite: CombPrevGPToSite.Selected.Value,
+                        STGP_FromAddress: txtPreviewGPFromAddress.Text,
+                        GP_SiteID: LookUp(IWH_Site_Masters,Site_Short_Name= CombPrevGPFromSite.Selected.Value),
+                        STGP_SiteID: LookUp(
+                            IWH_Site_Masters,
+                            Site_Short_Name = CombPrevGPFromSite.Selected.Value,
+                            Site_Id
+                        ),
+                        //added by monika for state
+                        STGP_Sender_State: LookUp(
+                            IWH_Site_Masters,
+                            Site_Short_Name = CombPrevGPFromSite.Selected.Value,
+                            Site_StateName
+                        ),
+                        STGP_Sender_StateCode: LookUp(
+                            IWH_Site_Masters,
+                            Site_Short_Name = CombPrevGPFromSite.Selected.Value,
+                            Site_StateCode
+                        ),
+                        'STGP_Sender_GSTIN/UIN': LookUp(
+                            IWH_Site_Masters,
+                            Site_Short_Name = CombPrevGPFromSite.Selected.Value,
+                            'Site_GSTIN/UIN'
+                        ),
+                        GP_CompanyName:LookUp(
+                            IWH_Site_Masters,
+                            Site_Short_Name = CombPrevGPFromSite.Selected.Value,
+                            Site_CompanyName
+                        ),
+                        STGP_Receiver_State: CombPrevGPStateName.Selected.Value,
+                        STGP_Receiver_StateCode: txtPreviewGPRecStateCode.Text,
+                        'STGP_Receiver_GSTIN/UIN': txtPreviewGPRecGSTIN.Text,
+                        //till here for state
+                        STGP_ReceiverPhone: txtPreviewGPRecPhoneNo.Text
+                /*STGP_SenderName: shipmentdetails.GatePass_SenderName,
+                STGP_SenderEmail: shipmentdetails.GatePass_SenderEmail,
+                STGP_RequestNo: varSTGPRequests,
+                STGP_SenderPhone: shipmentdetails.GatePass_SenderPhoneNumber,
+                STGP_ReceiverName: shipmentdetails.GatePass_ReceiverName,
+                STGP_ReceiverEmail: shipmentdetails.GatePass_ReceiverEmail,
+                STGP_ReceiverAddress: shipmentdetails.GatePass_ToAddress,
+                STGP_CostCenter: shipmentdetails.GatePass_CC,
+                GP_Fromsite: shipmentdetails.GatePass_FromSite,
+                GP_ToSite: shipmentdetails.GatePass_ToSite,
+                STGP_FromAddress: shipmentdetails.GatePass_FromAddress,
+                STGP_ReceiverPhone: shipmentdetails.GatePass_ReceiverPhoneNo*///till here commented on 21-08 
+//STGP_VehicleType:shipmentdetails.STGP_VehicleType,
+// STGP_ShipValue:shipmentdetails.GatePass_ToSite
+// STGP_ShipmentType:shipmentdetails.GatePass_ToAddress
+                    }
+                )
+            );
+            //third Patch
+Patch(
+                IWH_Status_Requests,
+                LookUp(
+                    IWH_Status_Requests,
+                    ProcessID = varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number
+                ),
+                {
+                    ProcessID: varSTGPRequests.STGP_Request_Number,
+                    Process_Type: 'Process_Type (IWH_Status_Requests)'.'Stand Alone Gate Pass',
+                    Process_Trigger: IWH_Process_Trigger.'Requestor Submission',
+                    /*Request_Status: If( 
+     			(First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.Yes),
+                        IWH_Request_Status.'InProgress-With GIS IT SD Team',
+                        (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.Bonded && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Logistics team',
+                        (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.'Non-Bonded'&& First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Facility Manager'
+               ),*/
+                    Request_Status: If(
+                        (CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.Yes),
+                        IWH_Request_Status.'InProgress-With GIS IT SD Team',
+                        (drpPrevGPBondedorNot.Selected.Value = 'IWH_ReqBonded-Type'.Bonded && CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Logistics team',
+                        (drpPrevGPBondedorNot.Selected.Value = 'IWH_ReqBonded-Type'.'Non-Bonded' && CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Facility Manager'
+                    )
+                }
+            );
+            //Fourth Patch
+
+              Patch(
+            IWH_AuditLogs,
+            Defaults(IWH_AuditLogs),
+            {
+                //Remarks: "Request Submitted: " & varSTGPRequests.STGP_Request_Number,$"Hello {User().FullName}"
+                Remarks: $"Request Re-Submitted: {varSTGPRequests.STGP_Request_Number}",
+                Process_ID: varSTGPRequests.STGP_Request_Number,
+                Process_Type: IWH_Process_Type.'Stand Alone Gate Pass',
+                Update: If(
+                        (CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.Yes),
+                        IWH_Request_Status.'InProgress-With GIS IT SD Team',
+                        (drpPrevGPBondedorNot.Selected.Value = 'IWH_ReqBonded-Type'.Bonded && CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Logistics team',
+                        (drpPrevGPBondedorNot.Selected.Value = 'IWH_ReqBonded-Type'.'Non-Bonded' && CombPrevGPITAsset.Selected.Value = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Facility Manager'
+                    )
+            }
+        );
+        ),
+        If(
+            IsBlank(varSTGPRequests),
+            Set(
+                varSTGPRequests,
+                Patch(
+                    IWH_STGP_Requests,
+                    Defaults(IWH_STGP_Requests),
+                    {
+                        GatePass_Type: First(colGatePassRequest).GatePass_Type,
+                        STGP_Return_To: First(colGatePassRequest).GatePass_ReturnTo,
+                        STGP_BusinesJustification: First(colGatePassRequest).GatePass_BusJustification,
+                        STGP_UsertoView: First(colGatePassRequest).GatePass_AddUsers,
+                        STGP_ReturnedDate: First(colGatePassRequest).GatePass_ReturnedDate,
+                        STGP_GatePass_Title: First(colGatePassRequest).GatePass_Title,
+                        STGP_AccessoriesReqd: First(colGatePassRequest).GatePass_AccessoriesReqd,
+                        STGP_ReqBonded: First(colGatePassRequest).GatePass_Bonded,
+                        STGP_Requestor: First(colGatePassRequest).Requestor,
+                        GP_Accessories:First(colGatePassRequest).GatePass_Accessories,
+                        STGP_Requestor_Email:First(colGatePassRequest).RequestorEmail,
+                        'IT Asset': First(colGatePassRequest).GatePass_ITAsset,
+                        STGP_Status: If(
+                            (First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.Yes),
+                            IWH_STGP_Status.'InProgress-With GIS IT SD Team',
+                            (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.Bonded && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                            IWH_STGP_Status.'InProgress-With Logistics team',
+                            (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.'Non-Bonded' && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                            IWH_STGP_Status.'InProgress-With Facility Manager'
+                        ),
+                        GP_AssignedTo: If(
+                            (First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.Yes),
+                            IWH_AssignedGrp_Type.GISITSD,
+                            (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.Bonded && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                            IWH_AssignedGrp_Type.Logistic,
+                            (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.'Non-Bonded' && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                            IWH_AssignedGrp_Type.Facility
+                        )
+                    }
+                )
+            );
+            ForAll(
+                col_STGP_Part_Details As STGPPartDetail,
+                Patch(
+                    IWH_STGP_Request_Details,
+                    Defaults(IWH_STGP_Request_Details),
+                    {
+                        Part_Number: STGPPartDetail.Part_Number,
+                        Part_Description: STGPPartDetail.Part_Description,
+                        IWH_STGP_RequestNo: varSTGPRequests,
+                        //Part_Type: STGPPartDetail.iwh_part_type1,
+                        STGP_PartType:STGPPartDetail.STGP_PartType,
+                        GP_Currency: STGPPartDetail.GP_Currency,
+                        CIF_Number: STGPPartDetail.CIF_Number,
+                        CIF_Value: STGPPartDetail.CIF_Value,
+                        Bonded_or_Not: STGPPartDetail.Bonded_or_Not,
+                        STGP_Part_Owner: STGPPartDetail.STGP_Part_Owner,
+                        GP_PartPrice: STGPPartDetail.GP_PartPrice,
+                        GP_NetPrice: STGPPartDetail.GP_NetPrice,
+                        STGPPart_SerialNo: STGPPartDetail.STGPPart_SerialNo,
+                         STGP_InvoiceNumber:STGPPartDetail.STGP_InvoiceNumber,
+                        STGP_PartRevision:STGPPartDetail.STGP_PartRevision,
+                        STGP_ExchangeRate: STGPPartDetail.STGP_ExchangeRate,
+                        // GP_ShipValue:STGPPartDetail.GP_ShipValue,varshipvalue
+                        GP_ShipValue: varshipvalue,
+                        STGP_ShipValue_Words: NetAmountInWords,
+                        GPQuantity: STGPPartDetail.GPQuantity
+                    }
+                )
+            );
+            /*ForAll(
+        Col_STGP_Shipment_Details As shipmentdetails,
+        Patch(
+            IWH_STGP_Shipment_Details,
+            Defaults(IWH_STGP_Shipment_Details),
+            {
+                STGP_SenderName: shipmentdetails.STGP_SenderName,
+                STGP_SenderEmail: shipmentdetails.STGP_SenderEmail,
+                STGP_RequestNo: varSTGPRequest,
+                STGP_SenderPhone: shipmentdetails.STGP_SenderPhone,
+                STGP_ReceiverName: shipmentdetails.STGP_ReceiverName,
+                STGP_ReceiverEmail: shipmentdetails.STGP_ReceiverEmail,
+                STGP_ReceiverAddress: shipmentdetails.STGP_ReceiverAddress,
+                STGP_CostCenter: shipmentdetails.STGP_CostCenter,
+                STGP_Driver:shipmentdetails.STGP_Driver,
+                STGP_VehicleNo:shipmentdetails.STGP_VehicleNo,
+                STGP_VehicleType:shipmentdetails.STGP_VehicleType,
+                STGP_ShipValue:shipmentdetails.STGP_ShipValue,
+                STGP_ShipmentType:shipmentdetails.STGP_ShipmentType
+            }
+        )
+    );*/
+//Clear(colIwhPartDetails1);
+ForAll(
+                colGatePassRequest As shipmentdetails,
+                Patch(
+                    IWH_STGP_Shipment_Details,
+                    Defaults(IWH_STGP_Shipment_Details),
+                    {
+                        STGP_SenderName: shipmentdetails.GatePass_SenderName,
+                        STGP_SenderEmail: shipmentdetails.GatePass_SenderEmail,
+                        STGP_RequestNo: varSTGPRequests,
+                        STGP_SenderPhone: shipmentdetails.GatePass_SenderPhoneNumber,
+                        STGP_ReceiverName: shipmentdetails.GatePass_ReceiverName,
+                        STGP_ReceiverEmail: shipmentdetails.GatePass_ReceiverEmail,
+                        STGP_ReceiverAddress: shipmentdetails.GatePass_ToAddress,
+                        STGP_CostCenter: shipmentdetails.GatePass_CC,
+                        GP_Fromsite: shipmentdetails.GatePass_FromSite,
+                        GP_ToSite: shipmentdetails.GatePass_ToSite,
+                        STGP_FromAddress: shipmentdetails.GatePass_FromAddress,
+                        //Monika - state changes
+                        STGP_SiteID:shipmentdetails.GatePass_SiteID,
+                        GP_SiteID: LookUp(IWH_Site_Masters,Site_Short_Name= combFromSite.Selected.Value),
+                        GP_CompanyName:shipmentdetails.GatePass_CompanyName,
+                        STGP_Sender_State: varSenderStateName,
+                        STGP_Sender_StateCode: varSenderStateCode,
+                        'STGP_Sender_GSTIN/UIN': varSenderGSTIN,
+                        STGP_Receiver_State: shipmentdetails.GatePass_ReceiverStateName,
+                        STGP_Receiver_StateCode: shipmentdetails.GatePass_ReceiverStateCode,
+                        'STGP_Receiver_GSTIN/UIN': shipmentdetails.GatePass_ReceiverGSTIN,
+                        //State code changes till here
+                        STGP_ReceiverPhone: shipmentdetails.GatePass_ReceiverPhoneNo
+//STGP_VehicleType:shipmentdetails.STGP_VehicleType,
+// STGP_ShipValue:shipmentdetails.GatePass_ToSite
+// STGP_ShipmentType:shipmentdetails.GatePass_ToAddress
+//varSTGPRequest.IWH_STGP_RequestNo.STGP_AccessoriesReqd =IWH_AccessoriesRequired_Yes_No.Yes && varSTGPRequest.GP_ShipValue > 50000
+                    }
+                )
+            );
+            Patch(
+                IWH_Status_Requests,
+                Defaults(IWH_Status_Requests),
+                {
+                    ProcessID: varSTGPRequests.STGP_Request_Number,
+                    Process_Type: 'Process_Type (IWH_Status_Requests)'.'Stand Alone Gate Pass',
+                    Process_Trigger: IWH_Process_Trigger.'Requestor Submission',
+                    Request_Status: If(
+                        (First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.Yes),
+                        IWH_Request_Status.'InProgress-With GIS IT SD Team',
+                        (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.Bonded && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Logistics team',
+                        (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.'Non-Bonded' && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Facility Manager'
+                    )
+                }
+            );
+              Patch(
+            IWH_AuditLogs,
+            Defaults(IWH_AuditLogs),
+            {
+                //Remarks: "Request Submitted: " & varSTGPRequests.STGP_Request_Number,$"Hello {User().FullName}"
+                Remarks: $"Request Submitted: {varSTGPRequests.STGP_Request_Number}",
+                Process_ID: varSTGPRequests.STGP_Request_Number,
+                Process_Type: IWH_Process_Type.'Stand Alone Gate Pass',
+                Update: If(
+                        (First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.Yes),
+                        IWH_Request_Status.'InProgress-With GIS IT SD Team',
+                        (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.Bonded && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Logistics team',
+                        (First(colGatePassRequest).GatePass_Bonded = 'IWH_ReqBonded-Type'.'Non-Bonded' && First(colGatePassRequest).GatePass_ITAsset = IWH_ITAsset_Type.No),
+                        IWH_Request_Status.'InProgress-With Facility Manager'
+                    )
+            }
+        );
+        )//IF close lookup Patch
+    ),
+ /*ClearCollect(
+        col_STGP_Part_Details,
+        IWH_STGP_Request_Details
+    );*/
+    Notify(
+        "ErrorMessage: " & FirstError.Message & " ErrorKind: " & FirstError.Kind,
+        NotificationType.Error
+    );
+    Patch(
+        'Error Logs',
+        Defaults('Error Logs'),
+        {
+            Action: "GatePass Request Creation",
+            App: "IWH StandAlone GatePass",
+            Control: FirstError.Source,
+            Component: "Screen:Preview Screen",
+            Message: FirstError.Message,
+            Name: "Error in GatePass Request Form at " & Now(),
+            Property: FirstError.Source,
+            RawErrorInfo: FirstError.Message,
+            Timestamp: Now(),
+            User: User().Email,
+            Origin: Origin.SQL,
+            Kind: Switch(
+                FirstError.Kind,
+                0,
+                Kind.None,
+                1,
+                Kind.Sync,
+                2,
+                Kind.MissingRequired,
+                3,
+                Kind.CreatePermission,
+                4,
+                Kind.EditPermissions,
+                5,
+                Kind.DeletePermissions,
+                6,
+                Kind.Conflict,
+                7,
+                Kind.NotFound,
+                8,
+                Kind.ConstraintViolated,
+                9,
+                Kind.GeneratedValue,
+                10,
+                Kind.ReadOnlyValue,
+                11,
+                Kind.Validation,
+                12,
+                Kind.Unknown,
+                13,
+                Kind.Div0,
+                14,
+                Kind.BadLanguageCode,
+                15,
+                Kind.BadRegex,
+                16,
+                Kind.InvalidFunctionUsage,
+                17,
+                Kind.FileNotFound,
+                18,
+                Kind.AnalysisError,
+                19,
+                Kind.ReadPermission,
+                20,
+                Kind.NotSupported,
+                21,
+                Kind.InsufficientMemory,
+                22,
+                Kind.QuotaExceeded,
+                23,
+                Kind.Network,
+                24,
+                Kind.Numeric,
+                Kind.Unknown
+            )
+        }
+    );
+    ,
+    Notify(
+        "GatePass Request created successfully",
+        NotificationType.Success
+    );
+    Refresh(IWH_STGP_Request_Details);
+    Refresh(IWH_STGP_Request_Details);
+    ClearCollect(
+        col_STGP_Part_Details,
+        ShowColumns(
+            IWH_STGP_Request_Details,
+            GP_ShipValue,
+            GP_NetPrice,
+            GP_PartPrice,
+            Part_Number,
+            GPQuantity,
+            IWH_STGP_RequestNo,
+            STGP_Part_Owner,
+            Part_Description,
+            IWH_Stand_Alone_MM_Details,
+            Bonded_or_Not,
+            STGPPart_SerialNo,STGP_InvoiceNumber,STGP_ExchangeRate,STGP_Request_Details,STGP_PartType,STGP_Return_Quantity,STGPPart_Weight,STGP_Part_Volume,CIF_Value,'GP_BondedNo.',GP_BondedDate,STGP_Comment,GP_PartWeightType,Foreign_Currency_Value,STGP_TypeofImport,STGP_HAWBNo,STGP_UOM,'Created On',GP_STPI_Import_Appr_No,GP_STPI_Import_Appr_Dt,GP_BOE_No,GP_BOEDate,GP_DutyForgone,STGP_PartRevision
+        )
+    );
+    Refresh(IWH_STGP_Request_Details);
+    Navigate(
+        'GatePass Entry',
+        ScreenTransition.Cover
+    );
+    
+);
+Set(
+    varSpinner,
+    false
+)
