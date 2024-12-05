@@ -1450,3 +1450,1056 @@ With(
         )
     )
 )
+/////////////////pagination
+items Sequence(RoundUp(varSTGPCount/drpSTGPEntryMaxRecord.Selected.Value,0),1)
+
+////////////////////////////////////////BtnreqNo.
+
+Refresh(IWH_STGP_Request_Details);
+/*ClearCollect(
+    col_STGP_Part_Details1,
+    IWH_STGP_Request_Details
+);*/
+Set(
+    VarRequestorUpdate,
+    true
+);
+/*Set(
+    vartest,
+    ThisItem
+);*/
+Switch(
+    varLoggedInUserGroup,
+    "Requestor",
+    If(
+        (ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Requestor' || ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending' || ThisItem.IWH_STGP_RequestNo.'Created By'.'Full Name' = User().FullName),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'GatePass Preview Screen',
+            ScreenTransition.Cover
+        ),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        )
+    ),
+    "Logistic",
+    If(
+        ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Logistics team'
+                                        ||ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||ThisItem.IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return',
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        ),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        )
+    ),
+    "Facility",
+    If(
+        ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Facility Manager',
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        ),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        )
+    ),
+    "Finance",
+    If(
+        (ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance Team' || ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team'),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        ),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        )
+    ),
+    "GISITSD",
+    If(
+        ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With GIS IT SD Team',
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        ),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        )
+    ),
+    "ReceivingTeam",
+    If(
+        ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'GP Partial Return'|| ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Receiving Team',
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        ),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        )
+    ),
+    /*"BTPSecurity",
+    If(
+        ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With BTP Security Team',
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        ),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        )
+    ),*/
+    "Buyer",
+    If(
+        ThisItem.IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With IMS Team',
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        ),
+        Set(
+            varSTGPRequest,
+            ThisItem
+        );
+        Navigate(
+            'Edit Screen',
+            ScreenTransition.None
+        )
+    )
+);
+///Changed code for Filter
+/*ClearCollect(col_STGP_Part_Details,Filter(
+        IWH_STGP_Request_Details,
+        IWH_STGP_RequestNo.STGP_Request_Number = VarRequestorUpdateID.STGP_Request_Number
+    ));*/
+ClearCollect(
+    col_STGP_Part_Details,
+    ShowColumns(
+        Filter(
+            IWH_STGP_Request_Details,
+            IWH_STGP_RequestNo.STGP_Request_Number = varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number
+        ),
+        GP_ShipValue,
+        GP_NetPrice,
+        GP_PartPrice,
+        Part_Number,
+        GPQuantity,
+        IWH_STGP_RequestNo,
+        STGP_Part_Owner,
+        Part_Description,
+        IWH_Stand_Alone_MM_Details,
+        Bonded_or_Not,
+        STGPPart_SerialNo,
+        GP_Currency,
+        STGP_ExchangeRate,
+        STGP_Request_Details,STGP_PartType,STGP_Return_Quantity,STGPPart_Weight,STGP_Part_Volume,CIF_Value,'GP_BondedNo.',GP_BondedDate,STGP_Comment,GP_PartWeightType,Foreign_Currency_Value,STGP_TypeofImport,STGP_HAWBNo,STGP_UOM,'Created On',GP_STPI_Import_Appr_No,GP_STPI_Import_Appr_Dt,GP_BOE_No,GP_BOEDate,GP_DutyForgone,STGP_PartRevision
+    )
+);
+
+Refresh(IWH_Process_Documents);
+
+ClearCollect(colShowAttachmentPrev, Filter(
+    IWH_Process_Documents,
+    ProcessID = varSTGPRequest.IWH_STGP_RequestNo.STGP_Request_Number && Type_Of_Document = IWH_Type_Of_Document.'Standalone Request Invoices'
+));
+
+
+/////App on start
+
+
+Concurrent(
+    Set(
+        LamColors,
+        {
+            Primary1: RGBA(
+                106,
+                120,
+                133,
+                1
+            ),
+            // slate
+            Primary2: RGBA(
+                36,
+                36,
+                55,
+                1
+            ),
+            // midnight
+            Primary3: RGBA(
+                230,
+                227,
+                220,
+                1
+            ),
+            // sand
+            Primary4: RGBA(
+                24,
+                129,
+                103,
+                1
+            ),
+            // mint
+            Secondary1: RGBA(
+                32,
+                167,
+                133,
+                1
+            ),
+            // darker shade of green
+            Secondary2: RGBA(
+                242,
+                194,
+                46,
+                1
+            ),
+            // for charts, diagram
+            Secondary3: RGBA(
+                232,
+                153,
+                69,
+                1
+            ),
+            // for charts, diagram
+            Secondary4: RGBA(
+                199,
+                79,
+                38,
+                1
+            ),
+            // for charts, diagram
+            Black: RGBA(
+                0,
+                0,
+                0,
+                1
+            ),
+            // 
+            White: RGBA(
+                255,
+                255,
+                255,
+                1
+            ),
+            // 
+            CancelFill: RGBA(
+                238,
+                239,
+                239,
+                1
+            )// as per elogic .ppt
+        }
+    ),
+    Set(
+        NewLamColors,
+        {
+            Primary1: RGBA(
+                204,
+                209,
+                214,
+                1
+            ),
+            Primary2: RGBA(
+                24,
+                129,
+                103,
+                1
+            ),
+            Primary3: RGBA(
+                42,
+                145,
+                119,
+                1
+            ),
+            Primary4: RGBA(
+                242,
+                250,
+                248,
+                1
+            ),
+            Secondary1: RGBA(
+                193,
+                199,
+                205,
+                1
+            ),
+            Secondary2: RGBA(
+                86,
+                97,
+                108,
+                1
+            )
+        }
+    ),
+    Set(
+        LamFont,
+        {
+            ArialFont: Font.Arial,
+            GeorgiaFont: Font.Georgia
+        }
+    )
+);
+Set(
+    FontSize,
+    {
+        h1: 16,
+        h2: 14,
+        h3: 12,
+        h4: 10,
+        h5: 8
+    }
+);
+Set(
+    FontWeights,
+    {
+        W1: FontWeight.Bold,
+        W2: FontWeight.Lighter,
+        W3: FontWeight.Normal,
+        W4: FontWeight.Semibold
+    }
+);
+Set(
+    LamTypography,
+    {
+        FontWeightHeader: FontWeight.Bold,
+        FontWeightSubHeader: FontWeight.Semibold,
+        FontWeight: FontWeight.Normal,
+        Height: 30,
+        Width: 300,
+        Color: LamColors.Primary2,
+        L1Size: 16,
+        // header text size
+        L2Size: 10,
+        //sub header, button, link text size
+        L3Size: 10,
+        // body, label text size
+        L1Font: LamFont.GeorgiaFont,
+        // header text font
+        L2Font: LamFont.ArialFont,
+        // sub header, button, link font
+        L3Font: LamFont.ArialFont// body, label font
+    }
+);
+Concurrent(
+    Set(
+        LamButton,
+        {
+            Fill: LamColors.Primary2,
+            Color: LamColors.White,
+            CancelButtonFill: LamColors.White,
+            CancelButtonColor: LamColors.Primary2,
+            NextButtonColor: LamColors.Primary4,
+            NextButtonWidth: 72,
+            NextButtonHeight: 32,
+            EditButtonWidth: 100,
+            CancelButtonWidth: 110,
+            CancelButtonHeight: 32,
+            Width: 110,
+            Height: 32,
+            Radius: 60,
+            Font: LamTypography.L2Font,
+            FontWeight: LamTypography.FontWeightSubHeader,
+            // Button text in CAPS
+            Size: LamTypography.L2Size
+        }
+    ),
+    Set(
+        LamDefaultLabel,
+        {
+            Color: LamColors.Primary2,
+            Font: LamTypography.L3Font,
+            FontWeight: LamTypography.FontWeight,
+            FontWeightHeader: LamTypography.FontWeightHeader,
+            //  text in Standard
+            Size: LamTypography.L3Size,
+            Height: 36,
+            BorderColor: NewLamColors.Primary1,
+            DisableColor: LamColors.Primary1
+        }
+    ),
+    Set(
+        LamComboboxDropdown,
+        {
+            Color: LamColors.Primary1,
+            //slate
+            ChevronBackground: LamColors.White,
+            //Slate
+            ChevronFill: LamColors.Primary1,
+            ChevronHoverBackground: LamColors.White,
+            //LamColors.Primary1,
+            //Slate
+ChevronHoverFill: LamColors.Primary1,
+            //NewLamColors.Secondary2,
+            //mint
+Fill: LamColors.White,
+            Font: LamTypography.L3Font,
+            FontWeight: LamTypography.FontWeight,
+            HoverColor: LamColors.Primary1,
+            //slate
+            HoverFill: LamColors.Primary3,
+            //sand
+            Size: LamTypography.L3Size,
+            PressedColor: LamColors.Primary1,
+            //slate
+            PressedFill: LamColors.Primary3,
+            //sand
+            SelectionColor: LamColors.Primary1,
+            //slate
+            SelectionFill: LamColors.Primary3,
+            //sand
+            BorderColor: NewLamColors.Primary1//slate
+        }
+    ),
+    Set(
+        LamDatepicker,
+        {
+            BorderColor: NewLamColors.Primary1,
+            //slate
+            Color: LamColors.Primary1,
+            //sand
+            Fill: LamColors.White,
+            Font: LamTypography.L3Font,
+            FontWeight: LamTypography.FontWeight,
+            IconFill: LamColors.Primary3,
+            IconBackground: LamColors.Primary1,
+            //slate
+            Size: LamTypography.L3Size,
+            SelectedDateFill: LamColors.Primary1,
+            HoverDateFill: LamColors.Primary1,
+            CalendarHeaderFill: LamColors.Primary1
+        }
+    ),
+    Set(
+        LamInput,
+        {
+            Color: LamColors.Primary2,
+            Font: LamTypography.L3Font,
+            FontWeight: LamTypography.FontWeight,
+            Size: LamTypography.L3Size,
+            Radius: 4,
+            BorderColor: NewLamColors.Primary1,
+            HoverColor: LamColors.Primary2,
+            PressedColor: LamColors.Primary2
+        //HoverBorderColor,PressedBorderColor=BorderColor
+        }
+    ),
+    Set(
+        LamCheckboxRadio,
+        {
+            Color: LamColors.Primary2,
+            Font: LamTypography.L3Font,
+            FontWeight: LamTypography.FontWeight,
+            Size: LamTypography.L3Size,
+            BorderColor: NewLamColors.Primary1,
+            RadioCheckmarkFill: LamColors.Primary4,
+            RadioCheckBorderColor: LamColors.Primary4,
+            RadioBorderColor: LamColors.Primary2,
+            HoverColor: LamColors.Primary3,
+            PressedColor: LamColors.Primary3
+        }
+    ),
+    Set(
+        LamIcons,
+        {
+            Color: LamColors.Primary4,
+            // 
+            Width: 30,
+            Height: 30
+        }
+    ),
+    Set(
+        LamToggle,
+        {
+            FalseFill: LamColors.Primary3,
+            TrueFill: LamColors.Primary4,
+            Font: LamTypography.L3Font,
+            FontWeight: LamTypography.FontWeight,
+            Size: LamTypography.L3Size,
+            BorderColor: NewLamColors.Primary1
+        }
+    ),
+    Set(
+        LamCancelButton,
+        {
+            Fill: RGBA(
+                255,
+                255,
+                255,
+                1
+            ),
+            HoverFil: RGBA(
+                232,
+                235,
+                237,
+                1
+            ),
+            PressedFill: RGBA(
+                218,
+                222,
+                226,
+                1
+            ),
+            DisabledFill: RGBA(
+                232,
+                235,
+                237,
+                1
+            ),
+            TextColor: RGBA(
+                38,
+                44,
+                48,
+                1
+            ),
+            DisabledColor: RGBA(
+                171,
+                178,
+                186,
+                1
+            )
+        }
+    ),
+    Set(
+        LamSubmitButton,
+        {
+            Fill: RGBA(
+                24,
+                129,
+                103,
+                1
+            ),
+            HoverFil: RGBA(
+                22,
+                117,
+                93,
+                1
+            ),
+            PressedFill: RGBA(
+                22,
+                117,
+                93,
+                1
+            ),
+            DisabledFill: RGBA(
+                232,
+                235,
+                237,
+                1
+            ),
+            TextColor: RGBA(
+                255,
+                255,
+                255,
+                1
+            ),
+            DisabledTextColor: RGBA(
+                171,
+                178,
+                186,
+                1
+            )
+        }
+    )
+);
+/*Set(
+    varLoggedInPersona,
+    "Logistic"
+);*/
+//Collection for PO 
+/*ClearCollect(
+    colInwardPO,
+    ShowColumns(
+        Table(Defaults(IWH_Inward_PO_Details)),
+        IWH_Inward_PO_Details,
+        PO_Number,
+        DN_Invoice_Number,
+        Discrepency_Remarks,
+        Discrepency_Status,
+        Discrepency_Type,
+        Is_Discrepancy,
+        'PTA Required?'
+    )
+);*/
+/*ClearCollect(
+    colSTGPPartDetails,
+    ShowColumns(
+        Table(Defaults(IWH_STGP_Request_Details)),
+        iwh_part_type1,
+        Part_Number,
+        Part_Description,
+        Quantity,
+        FCV_Currency,
+        Foreign_Currency_Value,
+        IWH_STGP_RequestNo,
+        STGP_Part_Owner
+    )
+);*/
+ClearCollect(
+    Col_STGP_Shipment_Details,
+    ShowColumns(
+        Table(Defaults(IWH_STGP_Shipment_Details)),
+        STGP_FromSite,
+        STGP_ToSite,
+        STGP_RequestNo
+    )
+);
+ClearCollect(
+    col_STGP_Request,
+    ShowColumns(
+        Table(Defaults(IWH_STGP_Requests)),
+        STGP_Requestor,
+        STGP_Request_Number,
+        STGP_GatePass_Title
+    )
+);
+/*ClearCollect(
+    colIWH_STGP_Request,
+    IWH_STGP_Requests
+);*/
+/*Filter(
+    IWH_Site_Masters,"BTP" in
+    Site_Type)*/
+ClearCollect(
+    Colsite,
+    Sort(
+        
+            Distinct(
+                IWH_Site_Masters,
+                Site_Short_Name
+            ),
+           Value
+        
+    )
+);
+//Concat(Varsite,"others",",");
+Collect(
+    Colsite,
+    {Value: "Vendor"}, {Value: "Lam Employee"}
+);
+//ClearCollect(coltosite,Remove(Colsite,FirstN(Colsite,1)));
+/*ClearCollect(ColSTGPRequestList,
+      AddColumns(col_STGP_Request As STGPRequest,"grouplist", LookUp(col_STGP_Part_Details,IWH_STGP_RequestNo=STGPRequest[@iwh_name],Part_Number)
+      )
+);*/
+//LookUp('Department Lookup', 'Team Member'.Email = ThisItem.'Created By'.Email, Department)
+/*ClearCollect(
+    col_STGP_Part_Details,
+    IWH_STGP_Request_Details
+);*/
+//new Collection for Main Gallery
+/*ClearCollect(
+    col_STGP_Request_Details,
+    IWH_STGP_Request_Details
+);*/
+/*ClearCollect (
+    IWH_STGP_Shipment_Details_Coll,
+    IWH_STGP_Shipment_Details
+);*/
+
+//commented on 25-09 by monika
+/*Collect(
+    col_STGP_Part_Details,
+    IWH_STGP_Request_Details
+);*/
+//commented on 25-09 by monika ends
+
+//Code Added on 21 st Sept
+/*ClearCollect(
+    col_STGP_Part_Details2,
+    IWH_STGP_Request_Details
+);
+ClearCollect(
+    col_STGP_Part_Details,
+    AddColumns(
+        col_STGP_Part_Details2,
+        ShipFrom,
+        LookUp(
+            IWH_STGP_Shipment_Details_Coll,
+            STGP_RequestNo.STGP_Request_Number = IWH_STGP_RequestNo.STGP_Request_Number
+        ).GP_Fromsite,
+        ShipTo,
+        LookUp(
+            IWH_STGP_Shipment_Details_Coll,
+            STGP_RequestNo.STGP_Request_Number = IWH_STGP_RequestNo.STGP_Request_Number
+        ).GP_ToSite,
+        CostCenter,
+        LookUp(
+            IWH_STGP_Shipment_Details_Coll,
+            STGP_RequestNo.STGP_Request_Number = IWH_STGP_RequestNo.STGP_Request_Number
+        ).STGP_CostCenter
+    )
+);*/
+/*ClearCollect(
+    col_STGP_Part_Details,
+    AddColumns(
+        col_STGP_Part_Details2,
+        ShipTo,
+        LookUp(IWH_STGP_Shipment_Details_Coll,
+        STGP_RequestNo.STGP_Request_Number = IWH_STGP_RequestNo.STGP_Request_Number
+    ).GP_ToSite
+    )
+); 
+ClearCollect(
+    col_STGP_Part_Details,
+    AddColumns(
+        col_STGP_Part_Details2,
+        CostCenter,
+        LookUp(IWH_STGP_Shipment_Details_Coll,
+        STGP_RequestNo.STGP_Request_Number = IWH_STGP_RequestNo.STGP_Request_Number
+    ).STGP_CostCenter
+    )
+);*/
+// Code Added on 21st September
+//Tries code to merge two tables
+/*ClearCollect(mysolution4,
+AddColumns(col_STGP_Part_Details,
+"PartDetails",
+Text(LookUp(col_STGP_Request,
+'STGP_Request_Number'=col_STGP_Part_Details[@IWH_STGP_RequestNo],Part_Number).Value)
+));*/
+//Collection for PO   Text(LookUp(database, 'id-code' = scannerRes, level).Value)
+/*ClearCollect(
+    colSLGPPartDetails,
+    ShowColumns(
+        Table(Defaults(IWH_Inward_PO_Details)),
+        IWH_Inward_PO_Details,
+        PO_Number,
+        DN_Invoice_Number,
+        Discrepency_Remarks,
+        Discrepency_Status,
+        Discrepency_Type,
+        Is_Discrepancy,
+        'PTA Required?'
+    )
+);*/
+/*ClearCollect(
+    colSLGPPartDetails,{
+   PartNo:"12",
+   PartDescription:"Part Description",
+   Qty:"2",
+   PartPrice: "124",
+   NetPrice:"12",
+   PartOwner:"monika",
+   BondedorNot:"No",
+   ID:""
+    }
+);*/
+//Clear(colInwardPO);
+//Collection for Parts 
+//Collection for BFET_ZSA_MaterialInformations 
+//ClearCollect(
+// colBFET_ZSA_MaterialInformations,
+// BFET_ZSA_MaterialInformations
+//);
+//Collection for  BFET_ZSA_RequestDetails 
+//ClearCollect(
+// colBFET_ZSA_RequestDetails,
+// BFET_ZSA_RequestDetails
+//);
+//Collection for  IWH_Inward_Request_Details 
+//ClearCollect(
+//  colIWH_Inward_Request_Details,
+// IWH_Inward_Request_Details
+//);
+//Collection for BFET_EXP_PurchaseOrders
+//ClearCollect(
+// colBFET_EXP_PurchaseOrders,
+//BFET_EXP_PurchaseOrders
+//);
+//Collection for BFET_EXP_PurchaseOrders
+//ClearCollect(
+//  colBFET_UPR_ItemDetail,
+//  BFET_UPR_ItemDetails
+//);
+Concurrent(
+    Set(
+        varRequestor,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "envVar-IWH-RequestorList"
+        ).Value
+    ),
+    Set(
+        varLogistic,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "envVar-IWH-LogisticList"
+        ).Value
+    ),
+   
+    Set(
+        varGISITSD,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "envVar-IWH-GISITSDList"
+        ).Value
+    ),
+    
+    Set(
+        varBuyer,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "envVar-IWH-BuyerList"
+        ).Value
+    ),
+    Set(
+        varFinance,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "evVar-IWH-FinanceList"
+        ).Value
+    ),
+    Set(
+        varFacility,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "envVar-IWH-FacilityManagerList"
+        ).Value
+    ),
+    Set(
+        varBTPSecurity,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "envVar-IWH-BTPSecurityList"
+        ).Value
+    ),
+     Set(
+        varReceivingTeam,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "envVar-IWH-ReceivingTeam"
+        ).Value
+    ),
+    Set(
+        varAzureStorageAccount,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "envVar-IWH-AzureBlob_StorageAccountName"
+        ).Value
+    ),
+    Set(
+        varAzureSASTocken,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "envVar-IWH-AzureBlob_SAS_Tocken"
+        ).Value
+    )
+);
+Set(
+    varLoggedInUserGroup,
+    If(
+        CountRows(
+            Filter(
+                Office365Groups.ListGroupMembers(varBTPSecurity).value,
+                mail = User().Email
+            )
+        ) > 0,
+        "BTPSecurity",
+        CountRows(
+            Filter(
+                Office365Groups.ListGroupMembers(varLogistic).value,
+                mail = User().Email
+            )
+        ) > 0,
+        "Logistic",
+        CountRows(
+            Filter(
+                Office365Groups.ListGroupMembers(varFacility).value,
+                mail = User().Email
+            )
+        ) > 0,
+        "Facility",
+        CountRows(
+            Filter(
+                Office365Groups.ListGroupMembers(varRequestor).value,
+                mail = User().Email
+            )
+        ) > 0,
+        "Requestor",
+        CountRows(
+            Filter(
+                Office365Groups.ListGroupMembers(varBuyer).value,
+                mail = User().Email
+            )
+        ) > 0,
+        "Buyer",
+        CountRows(
+            Filter(
+                Office365Groups.ListGroupMembers(varGISITSD).value,
+                mail = User().Email
+            )
+        ) > 0,
+        "GISITSD",
+        CountRows(
+            Filter(
+                Office365Groups.ListGroupMembers(varFinance).value,
+                mail = User().Email
+            )
+        ) > 0,
+        "Finance",
+         CountRows(
+            Filter(
+                Office365Groups.ListGroupMembers(varReceivingTeam).value,
+                mail = User().Email
+            )
+        ) > 0,
+        "ReceivingTeam",
+        "Requestor"
+    )
+);
+
+//Uncommented start for pagination
+Set(
+    varSTGPCount,
+    If(
+        varLoggedInUserGroup = "Logistic",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                 IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Logistics team'
+                ||IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'
+            )
+        ),
+        varLoggedInUserGroup = "GISITSD",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With GIS IT SD Team'
+            )
+        ),
+        varLoggedInUserGroup = "Requestor",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Requestor' || IWH_STGP_RequestNo.'Created By'.'Full Name' = User().FullName
+            )
+        ),
+        varLoggedInUserGroup = "Finance",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance Team' || IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team'
+            )
+        ),
+        //Commented for Receiving Team -Monika
+        /*varLoggedInUserGroup = "BTPSecurity",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With BTP Security Team'
+            )
+        ),*/
+        varLoggedInUserGroup = "Facility",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Facility Manager'
+            )
+        ),
+        varLoggedInUserGroup = "Buyer",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With IMS Team' || IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'InProgress-With Finance & IMS Team'
+            )
+        ),
+        //Added inprogress with Receiving team -Monika
+         varLoggedInUserGroup = "ReceivingTeam",
+        CountRows(
+            Filter(
+                col_STGP_Part_Details,
+                IWH_STGP_RequestNo.STGP_Status = IWH_STGP_Status.'Return Pending'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'GP Partial Return'||IWH_STGP_RequestNo.STGP_Status =IWH_STGP_Status.'InProgress-With Receiving Team'    
+            )
+        ),
+        //CountRows(col_STGP_Part_Details)
+        CountIf(col_STGP_Part_Details,true)
+    )
+);//Uncommented End for pagination
+
+
+ClearCollect(
+    col_STGP_Part_Details,ShowColumns(
+    IWH_STGP_Request_Details,GP_ShipValue,GP_NetPrice,GP_PartPrice,Part_Number,GPQuantity,IWH_STGP_RequestNo,STGP_Part_Owner,Part_Description,IWH_Stand_Alone_MM_Details,Bonded_or_Not,STGPPart_SerialNo,GP_Currency,STGP_ExchangeRate,STGP_Request_Details,STGP_PartType,STGP_Return_Quantity,STGPPart_Weight,STGP_Part_Volume,CIF_Value,'GP_BondedNo.',GP_BondedDate,STGP_Comment,GP_PartWeightType,Foreign_Currency_Value,STGP_TypeofImport,STGP_HAWBNo,STGP_UOM,'Created On',GP_STPI_Import_Appr_No,GP_STPI_Import_Appr_Dt,GP_BOE_No,GP_BOEDate,GP_DutyForgone,STGP_PartRevision)
+);
+
+Set(
+        varEnvName,
+        LookUp(
+            'Environment Variable Values',
+            'Environment Variable Definition'.'Display Name' = "enVar-GlobalEnvironmentName"
+        ).Value
+    )
+
+
+//Refresh(IWH_STGP_Request_Details);
+
+//commented on 25-09 by monika
+/*ClearCollect(
+    col_STGP_Part_Details,
+    IWH_STGP_Request_Details
+);*/
+//commented on 25-09 by monika
